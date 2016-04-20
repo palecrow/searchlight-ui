@@ -22,6 +22,7 @@
     .factory('horizon.dashboard.project.search.searchlightFacetUtils', FacetUtils);
 
   FacetUtils.$inject = [
+    '$rootScope',
     'commonStatusFilter',
     'resourceLabelerFilter',
     'horizon.dashboard.project.search.searchlightQueryUtils',
@@ -43,7 +44,8 @@
    *
    * @returns {function} This service
    */
-  function FacetUtils(commonStatusFilter,
+  function FacetUtils($rootScope,
+                      commonStatusFilter,
                       resourceLabeler,
                       searchlightQueryUtils,
                       searchlight)
@@ -104,6 +106,7 @@
 
     function broadcastFacetsChanged(data) {
       scope.$broadcast('facetsChanged', data);
+      //$rootScope.$broadcast('facetsChanged', data);
     }
 
     function updateResourceTypeFacets(resourceTypes, allFacetDefinitions) {

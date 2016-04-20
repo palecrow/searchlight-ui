@@ -23,6 +23,7 @@
 
   searchSettingsService.$inject = [
     '$modal',
+    '$q',
     'horizon.dashboard.project.search.basePath',
     'horizon.app.core.openstack-service-api.searchlight'
   ];
@@ -43,18 +44,15 @@
    * @returns {function} This settings service.
    */
   function searchSettingsService($modal,
+                                 $q,
                                  basePath,
                                  searchlight)
   {
     var service = {
-      events: {
-        settingsUpdatedEvent: 'horizon.dashboard.project.search.settingsUpdated',
-        pluginsUpdatedEvent: 'horizon.dashboard.project.search.pluginsUpdated'
-      },
+      getPlugins: getPlugins,
       open: open,
-      initScope: initScope,
-      initPlugin: initPlugins,
       settings: {
+        pluginsInitialized: false,
         availablePlugins: [],
         fullTextSearch: {
           delayInMS: 400,
@@ -82,7 +80,6 @@
         polling: {
           enabled: true,
           interval: 10, //seconds
-          getIntervalInMs: getIntervalInMs,
           interval_min: 1,
           interval_max: 300,
           policy: { rules: [["search", "search:user_polling:allow"]] }
@@ -90,38 +87,25 @@
       }
     };
 
-    //init();
-
     return service;
 
     //////////////
 
-    function init() {
-      initPlugins();
-    }
-
-    function initPlugins() {
-      searchlight.getPlugins().success(pluginsReceived);
-
-      function pluginsReceived(response) {
-        service.settings.availablePlugins = response.plugins;
-        scope.$emit(service.events.pluginsUpdatedEvent, response.plugins);
+    function getPlugins() {
+      var result;
+      if ( !service.settings.pluginsInitialized ) {
+        result = searchlight.getPlugins().then(pluginsReceived);
+      } else {
+        result = service.settings.availablePlugins;
       }
+
+      return $q.when(result);
     }
 
-    //TODO add subscribe instead of this.
-
-    var scope;
-
-    function initScope(newScope) {
-      if (scope !== newScope) {
-        scope = newScope;
-        init();
-      }
-    }
-
-    function getIntervalInMs() {
-      return service.settings.polling.interval * 1000;
+    function pluginsReceived(response) {
+      service.settings.pluginsInitialized = true;
+      service.settings.availablePlugins = response.data.plugins;
+      return response.data.plugins;
     }
 
     function open() {
@@ -131,16 +115,14 @@
         return editableSettings;
       }
 
-      var resolve = {
-        searchSettings: getSearchSettings
-      };
-
       var options = {
         controller: 'searchSettingsController as ctrl',
         scope: scope,
         backdrop: 'static',
         templateUrl: basePath + 'settings/search-settings.html',
-        resolve: resolve
+        resolve: {
+          searchSettings: getSearchSettings
+        }
       };
 
       return $modal.open(options)
@@ -149,7 +131,6 @@
 
       function updateSettingsAndNotify() {
         service.settings = angular.copy(editableSettings);
-        scope.$emit(service.events.settingsUpdatedEvent);
         return service.settings;
       }
     }

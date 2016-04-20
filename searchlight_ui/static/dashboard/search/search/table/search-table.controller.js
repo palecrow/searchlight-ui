@@ -59,33 +59,38 @@
     ctrl.filter = $filter;
     ctrl.hits = [];
     ctrl.hitsSrc = [];
-    ctrl.initialized = false;
     ctrl.searchFacets = [];
     ctrl.excludedTypes = ['OS::Glance::Metadef'];
     ctrl.searchSettings = searchSettings;
     ctrl.defaultResourceTypes = [];
     ctrl.defaultFacets = searchlightFacetUtils.defaultFacets();
     ctrl.registry = registry;
-    ctrl.refresh = searchlightSearchHelper.repeatLastSearchWithLatestSettings;
+    ctrl.refresh = searchlightSearchHelper.repeatLastSearch;
     ctrl.actionResultHandler = actionResultHandler;
     ctrl.getSearchlightKey = getSearchlightKey;
     ctrl.userSession = {};
+    ctrl.openSearchSettings = openSearchSettings;
 
-    var adHocPollInterval = 500;
-    var adHocPollDuration = 5000;
+    var checkFacetsWatcher;
+    var searchUpdatedWatcher;
 
-    //ctrl.isNested;
+    var useLastSearchQueryForFirstSearch = false;
+    var magicSearchInitialized = false;
+    var pluginsLoaded = false;
 
     init();
 
     ////////////////////////////////
 
     function init() {
-      ctrl.searchSettings.initScope($scope);
+      searchlightSearchHelper.setResultCallback(onSearchResult);
+      ctrl.searchSettings.getPlugins().then(pluginsUpdated);
+      addEventListeners($scope);
       searchlightFacetUtils.initScope($scope);
 
       if (searchlightSearchHelper.lastSearchQueryOptions) {
         ctrl.searchFacets = searchlightSearchHelper.lastSearchQueryOptions.searchFacets;
+        useLastSearchQueryForFirstSearch = true;
       } else {
         ctrl.searchFacets = ctrl.defaultFacets;
       }
@@ -96,21 +101,61 @@
         });
     }
 
-    /*function isNested (input) {
-      var result = angular.isArray(input) &&
-        input.length > 0 &&
-        angular.isObject(input[0]) &&
-        Object.keys(input[0]).length > 1;
+    function openSearchSettings() {
+      ctrl.searchSettings.open().then(onSearchSettingsUpdated);
+    }
 
-      return result;
-    }*/
+    function onSearchSettingsUpdated(settings) {
+      searchlightSearchHelper.repeatLastSearch();
+    }
 
-    var pluginsUpdatedWatcher = $scope.$on(
-      ctrl.searchSettings.events.pluginsUpdatedEvent,
-      pluginsUpdated
-    );
+    function addEventListeners(scope) {
 
-    function pluginsUpdated(event, plugins) {
+      searchUpdatedWatcher = scope.$on('serverSearchUpdated', function (event, searchData) {
+
+        magicSearchInitialized = true;
+
+        function performSearch() {
+          fullTextSearchTimeout = null;
+          search(searchData);
+        }
+
+        if (searchData.queryStringChanged) {
+          // This keeps the query from being executed too rapidly
+          // when the user is performing rapid key presses.
+          if (fullTextSearchTimeout) {
+            $timeout.cancel(fullTextSearchTimeout);
+          }
+
+          fullTextSearchTimeout = $timeout(
+            performSearch,
+            ctrl.searchSettings.settings.fullTextSearch.delayInMS
+          );
+        } else if (searchData.magicSearchQueryChanged) {
+          performSearch();
+        }
+      });
+
+      checkFacetsWatcher = scope.$on('checkFacets', function (event, selectedFacets) {
+        //Facets are actually DOM elements. This affects the styling.
+        $timeout(function () {
+          angular.forEach(selectedFacets, function setIsServerTrue(facet) {
+            facet.isServer = true;
+          });
+        });
+      });
+
+      scope.$on('$destroy', removeEventListeners);
+    }
+
+    function removeEventListeners() {
+      searchlightSearchHelper.stopSearchPolling();
+      checkFacetsWatcher();
+      searchUpdatedWatcher();
+    }
+
+    function pluginsUpdated(plugins) {
+      pluginsLoaded = true;
       var pluginToTypesOptions = {
         excludedTypes: ctrl.excludedTypes,
         flatten: true
@@ -124,85 +169,36 @@
       searchlightFacetUtils.setTypeFacetFromResourceTypes(
         ctrl.defaultResourceTypes, ctrl.searchFacets);
 
-      searchlightFacetUtils.broadcastFacetsChanged(searchlightSearchHelper.lastSearchQueryOptions);
+      $timeout( function() {
+        searchlightFacetUtils.broadcastFacetsChanged(searchlightSearchHelper.lastSearchQueryOptions);
+      }, 5000);
 
-      ctrl.initialized = true;
-
-      if (searchlightSearchHelper.lastSearchQueryOptions) {
-        searchlightSearchHelper.lastSearchQueryOptions.onSearchSuccess = onSearchResult;
-        searchlightSearchHelper.lastSearchQueryOptions.onSearchError = onSearchResult;
-        searchlightSearchHelper.repeatLastSearchWithLatestSettings();
-      } else {
-        search();
-      }
+      search();
     }
 
     var fullTextSearchTimeout;
-    var searchUpdatedWatcher = $scope.$on('serverSearchUpdated', function (event, searchData) {
 
-      // Magic search always broadcasts this at startup, so
-      // we have to not run until we are fully initialized.
-      if (!ctrl.initialized) {
+    function search(queryOptions) {
+      if ( !pluginsLoaded || !magicSearchInitialized ) {
         return;
       }
 
-      function performSearch() {
-        fullTextSearchTimeout = null;
-        search(searchData);
+      if ( useLastSearchQueryForFirstSearch ) {
+        //searchlightSearchHelper.lastSearchQueryOptions
+        useLastSearchQueryForFirstSearch = false;
+        searchlightSearchHelper.repeatLastSearch();
+      } else {
+        queryOptions = queryOptions || {};
+        queryOptions.allFacetDefinitions = ctrl.searchFacets;
+        queryOptions.searchFacets = ctrl.searchFacets;
+        queryOptions.defaultResourceTypes = ctrl.defaultResourceTypes;
+        searchlightSearchHelper.search(queryOptions);
       }
-
-      if (searchData.queryStringChanged) {
-        // This keeps the query from being executed too rapidly
-        // when the user is performing rapid key presses.
-        if (fullTextSearchTimeout) {
-          $timeout.cancel(fullTextSearchTimeout);
-        }
-
-        fullTextSearchTimeout = $timeout(
-          performSearch,
-          ctrl.searchSettings.settings.fullTextSearch.delayInMS
-        );
-      } else if (searchData.magicSearchQueryChanged) {
-        performSearch();
-      }
-    });
-
-    var checkFacetsWatcher = $scope.$on('checkFacets', function (event, selectedFacets) {
-      //Facets are actually DOM elements. This affects the styling.
-      $timeout(function () {
-        angular.forEach(selectedFacets, function setIsServerTrue(facet) {
-          facet.isServer = true;
-        });
-      });
-    });
-
-    var searchSettingsUpdatedWatcher = $scope.$on(
-      ctrl.searchSettings.events.settingsUpdatedEvent,
-      searchlightSearchHelper.repeatLastSearchWithLatestSettings
-    );
-
-    $scope.$on('$destroy', function cleanupListeners() {
-      searchlightSearchHelper.stopSearchPolling();
-      checkFacetsWatcher();
-      searchUpdatedWatcher();
-      searchSettingsUpdatedWatcher();
-      pluginsUpdatedWatcher();
-    });
-
-    function search(queryOptions) {
-      queryOptions = queryOptions || {};
-      queryOptions.allFacetDefinitions = ctrl.searchFacets;
-      queryOptions.searchFacets = ctrl.searchFacets;
-      queryOptions.defaultResourceTypes = ctrl.defaultResourceTypes;
-      queryOptions.onSearchSuccess = onSearchResult;
-      queryOptions.onSearchError = onSearchResult;
-
-      return searchlightSearchHelper.search(queryOptions);
     }
 
     function onSearchResult(response) {
 
-      cache.clean(adHocPollDuration * 3);
+      cache.clean(30 * 1000);
       ctrl.hitsSrc = response.hits.map(syncWithCache).filter(removeDeletedItems);
       ctrl.queryResponse = response;
     }
@@ -223,18 +219,7 @@
       return $q.when(returnValue, actionSuccessHandler, actionErrorHandler);
     }
 
-    /*
-    function repeatUntilChangedResults() {
-      // For now, all we can do is poll for a period of time.
-      searchlightSearchHelper.startAdHocPolling(adHocPollInterval, adHocPollDuration);
-    }
-    */
-
     function actionSuccessHandler(result) {
-
-      // For now, always poll for 5 seconds after every action. This is not
-      // needed with default polling enabled.
-      //repeatUntilChangedResults();
 
       // The action has completed (for whatever "complete" means to that
       // action. Notice the view doesn't really need to know the semantics of the

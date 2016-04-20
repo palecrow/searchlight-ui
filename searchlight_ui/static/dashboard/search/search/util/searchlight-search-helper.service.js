@@ -59,40 +59,30 @@
 
     var service = {
       lastSearchQueryOptions: null,
-      repeatLastSearchWithLatestSettings: repeatLastSearchWithLatestSettings,
+      repeatLastSearch: repeatLastSearch,
       search: search,
-      startAdHocPolling: startAdHocPolling,
-      stopAdHocPolling: stopAdHocPolling,
-      stopSearchPolling: stopSearchPolling
+      stopSearchPolling: stopSearchPolling,
+      setResultCallback: setResultCallback
     };
 
-    var adHocPollster = null;
     var settingsPollster = null;
+    var resultCallback = angular.noop;
 
     return service;
 
     //////////////////
 
-    function repeatLastSearchWithLatestSettings() {
-      service.lastSearchQueryOptions.is_repeat = true;
+    function repeatLastSearch() {
       search(service.lastSearchQueryOptions);
     }
 
     function search(queryOptions) {
-      if (!queryOptions.is_repeat) {
-        // This is a new search, stop any ad hoc polling
-        // ad hoc polling is intended for attempting to
-        // refresh after an action has been performed
-        // and we don't have any other way to know how
-        // to update the data.
-        service.stopAdHocPolling();
-      }
-
       // We just always will reset the next poll interval to
       // come after the latest search no matter what the
       // cause of the current search was.
       stopSearchPolling();
 
+      // Save the last search so it can be repeated later.
       service.lastSearchQueryOptions = queryOptions;
 
       var searchlightQuery = searchlightQueryGenerator.generate(queryOptions);
@@ -114,7 +104,7 @@
       function decoratedSearchSuccess(response) {
         if (settingsService.settings.polling.enabled) {
           settingsPollster = $timeout(
-            repeatLastSearchWithLatestSettings, settingsService.settings.polling.getIntervalInMs());
+            repeatLastSearch, settingsService.settings.polling.interval * 1000);
         }
 
         angular.forEach(response.hits, function (hit) {
@@ -124,7 +114,7 @@
           hit._source.updated_at = hit._source.updated_at || hit._source.created_at;
         });
 
-        queryOptions.onSearchSuccess(response);
+        resultCallback(response);
       }
 
       function decoratedSearchError(data, statusCode) {
@@ -134,23 +124,7 @@
           data: data,
           statusCode: statusCode
         };
-        queryOptions.onSearchError(result);
-      }
-    }
-
-    function startAdHocPolling(interval, maxTime) {
-      stopAdHocPolling();
-      interval = interval ? interval : settingsService.settings.polling.getIntervalInMs();
-      adHocPollster = $interval(repeatLastSearchWithLatestSettings, interval);
-      if (angular.isNumber(maxTime)) {
-        $timeout(stopAdHocPolling, maxTime);
-      }
-    }
-
-    function stopAdHocPolling() {
-      if (angular.isDefined(adHocPollster)) {
-        $interval.cancel(adHocPollster);
-        adHocPollster = null;
+        resultCallback(result);
       }
     }
 
@@ -161,5 +135,8 @@
       }
     }
 
+    function setResultCallback(callback) {
+      resultCallback = callback || angular.noop;
+    }
   }
 })();
