@@ -19,13 +19,36 @@
   <tr>
     <th colspan="100" class="search-header">
       <div class="row">
-      <hack-magic-search-bar class="col-md-10"
-        filter-facets="table.searchFacets"
-        client-full-text-search="false"
-        search-settings-callback="table.searchSettings.open">
-      </hack-magic-search-bar>
-      <actions class="col-md-2" allowed="table.registry.getGlobalActions" type="row">
-      </actions>
+        <div class="input-group">
+          <input type="text"
+                 class="form-control"
+                 placeholder="Saved search name..."
+                 ng-model="table.currentSearchName">
+          <span class="input-group-btn">
+            <button class="btn btn-default"
+                    type="button"
+                    ng-click="table.saveCurrentSearch()">Save</button>
+          </span>
+          <label ng-if="table.savedSearches.length == 0">
+            <label>No Saved Searches</label>
+          </label>
+          <saved-search
+              style="padding-left: 10px"
+              class="md-col-1"
+              ng-repeat="search in table.savedSearches"
+              name="search.name"
+              query="search.query"
+              on-run-search="table.runSavedSearch(query)"></saved-search>
+        </div><!-- /input-group -->
+      </div>
+      <div class="row">
+          <hack-magic-search-bar class="col-md-10"
+            filter-facets="table.searchFacets"
+            client-full-text-search="false"
+            search-settings-callback="table.searchSettings.open">
+          </hack-magic-search-bar>
+          <actions class="col-md-2" allowed="table.registry.getGlobalActions" type="row">
+          </actions>
       </div>
     </th>
     <!-- th colspan="1" class="table_caption">
