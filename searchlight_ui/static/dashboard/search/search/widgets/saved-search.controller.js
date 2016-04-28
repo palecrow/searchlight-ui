@@ -28,6 +28,7 @@
   function controller($scope, $timeout, searchlightSearchHelper) {
     var ctrl = this;
     var timeout = 2000;
+    var timeoutPromise = undefined;
 
     ctrl.hits = undefined;
     ctrl.onClick = onClick;
@@ -37,9 +38,17 @@
 
     executeSearch();
 
+    $scope.$on('$destroy', onDestroy);
+
+    function onDestroy() {
+      if ( timeoutPromise ) {
+        $timeout.cancel(timeoutPromise);
+      }
+    }
+
     function executeSearch() {
       searchlightSearchHelper.search(ctrl.query);
-      $timeout(function rerunSearch() {
+      timeoutPromise = $timeout(function rerunSearch() {
         executeSearch();
       }, timeout);
     }
