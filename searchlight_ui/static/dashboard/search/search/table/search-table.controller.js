@@ -87,7 +87,7 @@
     }
     ctrl.runSavedSearch = function runSavedSearch(savedSearch) {
       ctrl.searchFacets = savedSearch.searchFacets;
-      if (savedSearch.queryString) {
+      if (true || savedSearch.queryString) {
         $timeout(setInput(savedSearch.queryString));
         function setInput(text) {
           return function() {
