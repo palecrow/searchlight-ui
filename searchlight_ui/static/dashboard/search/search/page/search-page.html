@@ -1,0 +1,13 @@
+<hz-page-header header="{$ 'Search' | translate $}">
+  <p translate>
+    Find your cloud resources by selecting specific facets or by specifying
+    full text search queries.
+    <search-syntax></search-syntax>
+  </p>
+</hz-page-header>
+<hz-magic-search-bar
+  query="ctrl.query"
+></hz-magic-search-bar>
+<search-table
+  query="ctrl.query">
+</search-table>

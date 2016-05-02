@@ -54,7 +54,7 @@
 
     $routeProvider
       .when('/search/', {
-        templateUrl: path + 'table/search-table.html'
+        template: "<search-page></search-page>"
       });
   }
 

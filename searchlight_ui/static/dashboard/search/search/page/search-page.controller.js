@@ -19,35 +19,22 @@
 
   /**
    * @ngdoc controller
-   * @name SearchSyntaxController
+   * @name SearchPageController
    *
    * @description
-   * Controller for search syntax.
+   * Controller for search page
    */
   angular
     .module('horizon.dashboard.project.search')
-    .controller('horizon.dashboard.project.search.searchSyntaxController', SearchSyntaxController);
+    .controller('horizon.dashboard.project.search.SearchPageController', SearchPageController);
 
-  SearchSyntaxController.$inject = [
-    '$modal',
-    'horizon.dashboard.project.search.basePath'
+  SearchPageController.$inject = [
   ];
 
-  function SearchSyntaxController($modal, basePath)
+  function SearchPageController()
   {
     var ctrl = this;
-    ctrl.show = show;
-
-    ////////////////////
-
-    function show() {
-      var localSpec = {
-        backdrop: 'static',
-        templateUrl: basePath + 'syntax/search-syntax-modal.html'
-      };
-
-      $modal.open(localSpec);
-    }
+    ctrl.query = '';
   }
 
 })();

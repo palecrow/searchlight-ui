@@ -27,7 +27,7 @@
    */
   angular
     .module('horizon.dashboard.project.search')
-    .controller('searchTableController', SearchTableController);
+    .controller('horizon.dashboard.project.search.searchTableController', SearchTableController);
 
   SearchTableController.$inject = [
     '$scope',
@@ -74,7 +74,16 @@
     var adHocPollInterval = 500;
     var adHocPollDuration = 5000;
 
-    //ctrl.isNested;
+    var deregisterQueryWatcher = $scope.$watch(function queryWatch(scope) {
+      return scope.ctrl.query;
+    }, function queryWatchHandler( newValue, oldValue, scope) {
+      if ( newValue != oldValue ) {
+        onServerSearchUpdated({
+          queryStringChanged: true,
+          queryString: newValue
+        });
+      }
+    }, true);
 
     init();
 
@@ -88,11 +97,6 @@
         ctrl.searchFacets = searchlightSearchHelper.lastSearchQueryOptions.searchFacets;
         if (searchlightSearchHelper.lastSearchQueryOptions.queryString) {
           $timeout(setInput(searchlightSearchHelper.lastSearchQueryOptions.queryString));
-          function setInput(text) {
-            return function() {
-              angular.element('.search-input').val(text);
-            };
-          }
         }
       } else {
         ctrl.searchFacets = ctrl.defaultFacets;
@@ -102,6 +106,12 @@
         .then(function onUserSessionGet(session) {
           ctrl.userSession = session;
         });
+    }
+
+    function setInput(text) {
+      return function() {
+        angular.element('.search-input').val(text);
+      };
     }
 
     /*function isNested (input) {
@@ -146,7 +156,11 @@
     }
 
     var fullTextSearchTimeout;
-    var searchUpdatedWatcher = $scope.$on('serverSearchUpdated', function (event, searchData) {
+    var searchUpdatedWatcher = $scope.$on('serverSearchUpdated', function(event, searchData) {
+      onServerSearchUpdated(searchData);
+    });
+
+    function onServerSearchUpdated(searchData) {
       // Magic search always broadcasts this at startup, so
       // we have to not run until we are fully initialized.
       if (!ctrl.initialized) {
@@ -172,7 +186,7 @@
       } else if (searchData.magicSearchQueryChanged) {
         performSearch();
       }
-    });
+    }
 
     var checkFacetsWatcher = $scope.$on('checkFacets', function (event, selectedFacets) {
       //Facets are actually DOM elements. This affects the styling.
@@ -194,6 +208,7 @@
       searchUpdatedWatcher();
       searchSettingsUpdatedWatcher();
       pluginsUpdatedWatcher();
+      deregisterQueryWatcher();
     });
 
     function search(queryOptions) {
