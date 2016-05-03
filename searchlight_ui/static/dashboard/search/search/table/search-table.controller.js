@@ -57,7 +57,6 @@
     ctrl.filter = $filter;
     ctrl.hits = [];
     ctrl.hitsSrc = [];
-    ctrl.initialized = false;
     ctrl.facets = [];
     ctrl.excludedTypes = ['OS::Glance::Metadef'];
     ctrl.searchSettings = searchSettings;
@@ -114,11 +113,6 @@
       searchlightFacetUtils.setTypeFacetFromResourceTypes(
         ctrl.defaultResourceTypes, ctrl.facets);
 
-      //searchlightFacetUtils.broadcastFacetsChanged(searchlightSearchHelper.lastSearchQueryOptions);
-      ctrl.facets = searchlightSearchHelper.lastSearchQueryOptions;
-
-      ctrl.initialized = true;
-
       if (searchlightSearchHelper.lastSearchQueryOptions) {
         searchlightSearchHelper.lastSearchQueryOptions.onSearchSuccess = onSearchResult;
         searchlightSearchHelper.lastSearchQueryOptions.onSearchError = onSearchResult;
@@ -134,11 +128,6 @@
     });
 
     function onServerSearchUpdated(searchData) {
-      // Magic search always broadcasts this at startup, so
-      // we have to not run until we are fully initialized.
-      if (!ctrl.initialized) {
-        return;
-      }
 
       function performSearch() {
         fullTextSearchTimeout = null;
