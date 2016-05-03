@@ -53,7 +53,7 @@
       },
       open: open,
       initScope: initScope,
-      initPlugin: initPlugins,
+      initPlugins: initPlugins,
       settings: {
         availablePlugins: [],
         fullTextSearch: {
@@ -90,22 +90,16 @@
       }
     };
 
-    //init();
-
     return service;
 
     //////////////
 
-    function init() {
-      initPlugins();
-    }
-
     function initPlugins() {
-      searchlight.getPlugins().success(pluginsReceived);
+      return searchlight.getPlugins().then(pluginsReceived);
 
       function pluginsReceived(response) {
-        service.settings.availablePlugins = response.plugins;
-        scope.$emit(service.events.pluginsUpdatedEvent, response.plugins);
+        service.settings.availablePlugins = response.data.plugins;
+        return service.settings.availablePlugins;
       }
     }
 
@@ -116,7 +110,6 @@
     function initScope(newScope) {
       if (scope !== newScope) {
         scope = newScope;
-        init();
       }
     }
 

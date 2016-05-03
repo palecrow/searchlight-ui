@@ -29,12 +29,26 @@
     .controller('horizon.dashboard.project.search.SearchPageController', SearchPageController);
 
   SearchPageController.$inject = [
+    '$scope'
   ];
 
-  function SearchPageController()
+  function SearchPageController($scope)
   {
     var ctrl = this;
     ctrl.query = '';
+    ctrl.facets = ['snarf'];
+/*
+    var facetsChangedWatcher = $scope.$on('facetsChanged', function (event, data) {
+      ctrl.facets = data;
+      $timeout(function () {
+        if (data && data.magicSearchQuery) {
+          initSearch(data.magicSearchQuery.split('&'));
+        } else {
+          initSearch(ctrl.currentSearch.map(function(x) { return x.name; }));
+        }
+      });
+    });
+*/
   }
 
 })();

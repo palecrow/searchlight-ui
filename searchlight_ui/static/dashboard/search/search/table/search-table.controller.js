@@ -36,7 +36,6 @@
     '$timeout',
     'searchPluginResourceTypesFilter',
     'horizon.framework.conf.resource-type-registry.service',
-    'horizon.app.core.openstack-service-api.userSession',
     'horizon.dashboard.project.search.searchlightFacetUtils',
     'horizon.dashboard.project.search.searchlightSearchHelper',
     'horizon.dashboard.project.search.settingsService',
@@ -49,7 +48,6 @@
                                  $timeout,
                                  searchPluginResourceTypesFilter,
                                  registry,
-                                 userSession,
                                  searchlightFacetUtils,
                                  searchlightSearchHelper,
                                  searchSettings,
@@ -60,7 +58,7 @@
     ctrl.hits = [];
     ctrl.hitsSrc = [];
     ctrl.initialized = false;
-    ctrl.searchFacets = [];
+    ctrl.facets = [];
     ctrl.excludedTypes = ['OS::Glance::Metadef'];
     ctrl.searchSettings = searchSettings;
     ctrl.defaultResourceTypes = [];
@@ -69,7 +67,6 @@
     ctrl.refresh = searchlightSearchHelper.repeatLastSearchWithLatestSettings;
     ctrl.actionResultHandler = actionResultHandler;
     ctrl.getSearchlightKey = getSearchlightKey;
-    ctrl.userSession = {};
 
     var adHocPollInterval = 500;
     var adHocPollDuration = 5000;
@@ -91,44 +88,19 @@
 
     function init() {
       ctrl.searchSettings.initScope($scope);
-      searchlightFacetUtils.initScope($scope);
+      ctrl.searchSettings.initPlugins().then(pluginsUpdated);
 
       if (searchlightSearchHelper.lastSearchQueryOptions) {
-        ctrl.searchFacets = searchlightSearchHelper.lastSearchQueryOptions.searchFacets;
+        ctrl.facets = searchlightSearchHelper.lastSearchQueryOptions.searchFacets;
         if (searchlightSearchHelper.lastSearchQueryOptions.queryString) {
-          $timeout(setInput(searchlightSearchHelper.lastSearchQueryOptions.queryString));
+          ctrl.query = searchlightSearchHelper.lastSearchQueryOptions.queryString;
         }
       } else {
-        ctrl.searchFacets = ctrl.defaultFacets;
+        ctrl.facets = ctrl.defaultFacets;
       }
-
-      userSession.get()
-        .then(function onUserSessionGet(session) {
-          ctrl.userSession = session;
-        });
     }
 
-    function setInput(text) {
-      return function() {
-        angular.element('.search-input').val(text);
-      };
-    }
-
-    /*function isNested (input) {
-      var result = angular.isArray(input) &&
-        input.length > 0 &&
-        angular.isObject(input[0]) &&
-        Object.keys(input[0]).length > 1;
-
-      return result;
-    }*/
-
-    var pluginsUpdatedWatcher = $scope.$on(
-      ctrl.searchSettings.events.pluginsUpdatedEvent,
-      pluginsUpdated
-    );
-
-    function pluginsUpdated(event, plugins) {
+    function pluginsUpdated(plugins) {
       var pluginToTypesOptions = {
         excludedTypes: ctrl.excludedTypes,
         flatten: true
@@ -140,9 +112,10 @@
       });
 
       searchlightFacetUtils.setTypeFacetFromResourceTypes(
-        ctrl.defaultResourceTypes, ctrl.searchFacets);
+        ctrl.defaultResourceTypes, ctrl.facets);
 
-      searchlightFacetUtils.broadcastFacetsChanged(searchlightSearchHelper.lastSearchQueryOptions);
+      //searchlightFacetUtils.broadcastFacetsChanged(searchlightSearchHelper.lastSearchQueryOptions);
+      ctrl.facets = searchlightSearchHelper.lastSearchQueryOptions;
 
       ctrl.initialized = true;
 
@@ -213,8 +186,8 @@
 
     function search(queryOptions) {
       queryOptions = queryOptions || {};
-      queryOptions.allFacetDefinitions = ctrl.searchFacets;
-      queryOptions.searchFacets = ctrl.searchFacets;
+      queryOptions.allFacetDefinitions = ctrl.facets;
+      queryOptions.searchFacets = ctrl.facets;
       queryOptions.defaultResourceTypes = ctrl.defaultResourceTypes;
       queryOptions.onSearchSuccess = onSearchResult;
       queryOptions.onSearchError = onSearchResult;

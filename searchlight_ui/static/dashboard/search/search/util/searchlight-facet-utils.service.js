@@ -49,17 +49,10 @@
                       searchlight)
   {
     var service = {
-      addResourceTypeFacets: addResourceTypeFacets,
-      broadcastFacetsChanged: broadcastFacetsChanged,
       defaultFacets: defaultFacets,
-      facetListToKeyValuePairs: facetListToKeyValuePairs,
-      initScope: initScope,
       isServerFacet: isServerFacet,
-      keyValueStringToKeyValueObject: keyValueStringToKeyValueObject,
       queryParamsToKeyValuePairObjects: queryParamsToKeyValuePairObjects,
-      removeFacetsNotInResourceTypes: removeFacetsNotInResourceTypes,
       setTypeFacetFromResourceTypes: setTypeFacetFromResourceTypes,
-      timeRangeFacetPastOptions: timeRangeFacetPastOptions,
       typeFacetFromResourceTypes: typeFacetFromResourceTypes,
       updateResourceTypeFacets: updateResourceTypeFacets
     };
@@ -67,12 +60,6 @@
     return service;
 
     //////////////////
-
-    var scope;
-
-    function initScope(newScope) {
-      scope = newScope;
-    }
 
     function defaultFacets() {
       return [
@@ -89,7 +76,7 @@
           singleton: true,
           isServer: true,
           persistent: true,
-          options: service.timeRangeFacetPastOptions('created_at')
+          options: timeRangeFacetPastOptions('created_at')
         },
         {
           label: gettext('Updated'),
@@ -97,27 +84,24 @@
           singleton: true,
           isServer: true,
           persistent: true,
-          options: service.timeRangeFacetPastOptions('updated_at')
+          options: timeRangeFacetPastOptions('updated_at')
         }
       ];
-    }
-
-    function broadcastFacetsChanged(data) {
-      scope.$broadcast('facetsChanged', data);
     }
 
     function updateResourceTypeFacets(resourceTypes, allFacetDefinitions) {
 
       if (angular.isString(resourceTypes)) {
-        service.addResourceTypeFacets(resourceTypes, allFacetDefinitions);
+        addResourceTypeFacets(resourceTypes, allFacetDefinitions);
       } else if (angular.isArray(resourceTypes)) {
         angular.forEach(resourceTypes, function (type) {
-          service.addResourceTypeFacets(type, allFacetDefinitions);
+          addResourceTypeFacets(type, allFacetDefinitions);
         });
       }
 
-      service.removeFacetsNotInResourceTypes(resourceTypes, allFacetDefinitions);
+      removeFacetsNotInResourceTypes(resourceTypes, allFacetDefinitions);
     }
+
 
     function addResourceTypeFacets(resourceType, allFacetDefinitions) {
       // Searchlight standardardizes on created_at / updated_at,
@@ -293,7 +277,7 @@
       }
 
       if (facetsChanged) {
-        service.broadcastFacetsChanged();
+        broadcastFacetsChanged();
       }
     }
 
