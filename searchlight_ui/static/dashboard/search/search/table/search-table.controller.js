@@ -70,8 +70,19 @@
     var adHocPollInterval = 500;
     var adHocPollDuration = 5000;
 
-    var deregisterQueryWatcher = $scope.$watch(function queryWatch(scope) {
-      return scope.ctrl.query;
+    var deregisterCurrentFacetsWatch = $scope.$watch(function currentFacetsWatch(scope) {
+      return scope.ctrl.currentSearchFacets;
+    }, function queryWatchHandler( newValue, oldValue, scope) {
+      if ( newValue != oldValue ) {
+        onServerSearchUpdated({
+          magicSearchQueryChanged: true,
+          magicSearchQuery: newValue
+        });
+      }
+    }, true);
+
+    var deregisterCurrentTextWatch = $scope.$watch(function currentTextWatch(scope) {
+      return scope.ctrl.currentSearchText;
     }, function queryWatchHandler( newValue, oldValue, scope) {
       if ( newValue != oldValue ) {
         onServerSearchUpdated({
@@ -169,8 +180,8 @@
       checkFacetsWatcher();
       searchUpdatedWatcher();
       searchSettingsUpdatedWatcher();
-      pluginsUpdatedWatcher();
-      deregisterQueryWatcher();
+      deregisterCurrentFacetsWatch();
+      deregisterCurrentTextWatch();
     });
 
     function search(queryOptions) {

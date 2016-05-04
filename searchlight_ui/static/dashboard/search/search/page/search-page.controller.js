@@ -35,8 +35,9 @@
   function SearchPageController($scope)
   {
     var ctrl = this;
-    ctrl.query = '';
-    ctrl.facets = ['snarf'];
+    ctrl.facets = ctrl.facets || [];
+    ctrl.currentSearchText = ctrl.currentSearchText || '';
+    ctrl.currentSearchFacets = ctrl.currentSearchFacets || '';
 /*
     var facetsChangedWatcher = $scope.$on('facetsChanged', function (event, data) {
       ctrl.facets = data;

@@ -34,8 +34,9 @@
     var directive = {
       restrict: 'E',
       scope: {
-        query: '=',
         facets: '=',
+        currentSearchText: '=',
+        currentSearchFacets: '='
       },
       templateUrl: basePath + 'table/search-table.html',
       controller: "horizon.dashboard.project.search.searchTableController as ctrl",
