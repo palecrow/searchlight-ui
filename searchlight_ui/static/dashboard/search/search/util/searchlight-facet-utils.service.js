@@ -137,7 +137,7 @@
 
         if (newFacets && newFacets.length > 0) {
           Array.prototype.push.apply(allFacetDefinitions, newFacets);
-          broadcastFacetsChanged();
+          //broadcastFacetsChanged();
         }
       }
 
@@ -277,7 +277,7 @@
       }
 
       if (facetsChanged) {
-        broadcastFacetsChanged();
+        //broadcastFacetsChanged();
       }
     }
 

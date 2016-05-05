@@ -57,7 +57,7 @@
     ctrl.filter = $filter;
     ctrl.hits = [];
     ctrl.hitsSrc = [];
-    ctrl.facets = [];
+    ctrl.availableFacets = [];
     ctrl.excludedTypes = ['OS::Glance::Metadef'];
     ctrl.searchSettings = searchSettings;
     ctrl.defaultResourceTypes = [];
@@ -101,12 +101,12 @@
       ctrl.searchSettings.initPlugins().then(pluginsUpdated);
 
       if (searchlightSearchHelper.lastSearchQueryOptions) {
-        ctrl.facets = searchlightSearchHelper.lastSearchQueryOptions.searchFacets;
+        ctrl.availableFacets = searchlightSearchHelper.lastSearchQueryOptions.searchFacets;
         if (searchlightSearchHelper.lastSearchQueryOptions.queryString) {
           ctrl.query = searchlightSearchHelper.lastSearchQueryOptions.queryString;
         }
       } else {
-        ctrl.facets = ctrl.defaultFacets;
+        ctrl.availableFacets = ctrl.defaultFacets;
       }
     }
 
@@ -122,7 +122,7 @@
       });
 
       searchlightFacetUtils.setTypeFacetFromResourceTypes(
-        ctrl.defaultResourceTypes, ctrl.facets);
+        ctrl.defaultResourceTypes, ctrl.availableFacets);
 
       if (searchlightSearchHelper.lastSearchQueryOptions) {
         searchlightSearchHelper.lastSearchQueryOptions.onSearchSuccess = onSearchResult;
@@ -186,8 +186,8 @@
 
     function search(queryOptions) {
       queryOptions = queryOptions || {};
-      queryOptions.allFacetDefinitions = ctrl.facets;
-      queryOptions.searchFacets = ctrl.facets;
+      queryOptions.allFacetDefinitions = ctrl.availableFacets;
+      queryOptions.searchFacets = ctrl.availableFacets;
       queryOptions.defaultResourceTypes = ctrl.defaultResourceTypes;
       queryOptions.onSearchSuccess = onSearchResult;
       queryOptions.onSearchError = onSearchResult;

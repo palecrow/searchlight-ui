@@ -35,7 +35,7 @@
   function SearchPageController($scope)
   {
     var ctrl = this;
-    ctrl.facets = ctrl.facets || [];
+    ctrl.availableFacets = ctrl.availableFacets || [];
     ctrl.currentSearchText = ctrl.currentSearchText || '';
     ctrl.currentSearchFacets = ctrl.currentSearchFacets || '';
 /*

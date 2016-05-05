@@ -34,7 +34,7 @@
     var directive = {
       restrict: 'E',
       scope: {
-        facets: '=',
+        availableFacets: '=',
         currentSearchText: '=',
         currentSearchFacets: '='
       },
