@@ -17,16 +17,16 @@
   'use strict';
 
   angular
-    .module('horizon.dashboard.search.search.util.cache')
-    .factory('horizon.dashboard.search.search.util.cache.service', cacheService);
+    .module('searchlight-ui.dashboard.search.search.util.cache')
+    .factory('searchlight-ui.dashboard.search.search.util.cache.service', cacheService);
 
   cacheService.$inject = [
   ];
 
   /**
    * @ngdoc service
-   * @name horizon.dashboard.search.search.util.cache:cacheService
-   * @module horizon.dashboard.search.search.util.cache
+   * @name searchlight-ui.dashboard.search.search.util.cache:cacheService
+   * @module searchlight-ui.dashboard.search.search.util.cache
    * @kind function
    * @description
    *

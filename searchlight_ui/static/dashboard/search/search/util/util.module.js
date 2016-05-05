@@ -18,14 +18,14 @@
 
   /**
    * @ngdoc overview
-   * @name horizon.dashboard.search.search.util
+   * @name searchlight-ui.dashboard.search.search.util
    * @description
    *
    *
    * This module provides utilities used by the search ui
    */
   angular
-    .module('horizon.dashboard.search.search.util', [
-      'horizon.dashboard.search.search.util.cache'
+    .module('searchlight-ui.dashboard.search.search.util', [
+      'searchlight-ui.dashboard.search.search.util.cache'
     ]);
 })();

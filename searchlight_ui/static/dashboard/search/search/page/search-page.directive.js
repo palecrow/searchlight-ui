@@ -18,11 +18,11 @@
   'use strict';
 
   angular
-    .module('horizon.dashboard.project.search')
+    .module('searchlight-ui.dashboard.search.search')
     .directive('searchPage', definition);
 
   definition.$inject = [
-    'horizon.dashboard.project.search.basePath'
+    'searchlight-ui.dashboard.search.search.basePath'
   ];
 
   /**
@@ -36,7 +36,7 @@
       scope: {
       },
       templateUrl: basePath + 'page/search-page.html',
-      controller: "horizon.dashboard.project.search.SearchPageController as ctrl",
+      controller: "searchlight-ui.dashboard.search.search.SearchPageController as ctrl",
       bindToController: true
     };
 

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2016 Hewlett-Packard Development Company, L.P.
+ *    (c) Copyright 2015 Hewlett-Packard Development Company, L.P.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-(function () {
+(function() {
   'use strict';
+/**
+ * @fileOverview Magic Search JS
+ * @requires AngularJS
+ *
+ */
 
-  angular
-    .module('searchlight-ui.dashboard.search.search')
-    .directive('searchTable', searchTable);
+  angular.module('searchlight-ui.dashboard.search.search.sl-magic-search')
+    .directive('slMagicSearch', slMagicSearch);
 
-  searchTable.$inject = [
+  slMagicSearch.$inject = [
     'searchlight-ui.dashboard.search.search.basePath'
   ];
 
-  /**
-   * @ngdoc directive
-   * @name searchTable
-   * @description
-   */
-  function searchTable(basePath) {
-    var directive = {
+  function slMagicSearch(basePath) {
+    return {
       restrict: 'E',
       scope: {
+        strings: '=',
         availableFacets: '=',
         currentSearchText: '=',
         currentSearchFacets: '='
       },
-      templateUrl: basePath + 'table/search-table.html',
-      controller: "searchlight-ui.dashboard.search.search.searchTableController as ctrl",
-      bindToController: true,
+      templateUrl: basePath + 'sl-magic-search/magic-search.html',
+      controller: 'searchlight-ui.dashboard.search.search.sl-magic-search.MagicSearchController as ctrl',
+      bindToController: true
     };
-
-    return directive;
   }
 
 })();
-

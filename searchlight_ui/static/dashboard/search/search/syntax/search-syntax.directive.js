@@ -18,11 +18,11 @@
   'use strict';
 
   angular
-    .module('horizon.dashboard.project.search')
+    .module('searchlight-ui.dashboard.search.search')
     .directive('searchSyntax', searchSyntax);
 
   searchSyntax.$inject = [
-    'horizon.dashboard.project.search.basePath'
+    'searchlight-ui.dashboard.search.search.basePath'
   ];
 
   /**
@@ -36,7 +36,7 @@
       scope: {
       },
       templateUrl: basePath + 'syntax/search-syntax.html',
-      controller: "horizon.dashboard.project.search.searchSyntaxController as ctrl"
+      controller: "searchlight-ui.dashboard.search.search.searchSyntaxController as ctrl"
     };
 
     return directive;

@@ -19,16 +19,17 @@
 
   /**
    * @ngdoc overview
-   * @ngname horizon.dashboard.project.search
+   * @ngname searchlight-ui.dashboard.search.search
    *
    * @description
    * Provides the services and widgets required
    * to support and display the project search panel.
    */
   angular
-    .module('horizon.dashboard.project.search', [
+    .module('searchlight-ui.dashboard.search.search', [
       'horizon.framework.conf',
-      'horizon.dashboard.search.search.util'])
+      'searchlight-ui.dashboard.search.search.util',
+      'searchlight-ui.dashboard.search.search.sl-magic-search'])
     .config(config)
     .run(run);
 
@@ -39,7 +40,7 @@
   ];
 
   /**
-   * @name horizon.dashboard.project.search.basePath
+   * @name searchlight-ui.dashboard.search.search.basePath
    * @description Base path for the project dashboard
    *
    * @param {function} $provide ng provide service
@@ -50,7 +51,7 @@
    */
   function config($provide, $windowProvider, $routeProvider) {
     var path = $windowProvider.$get().STATIC_URL + 'dashboard/search/search/';
-    $provide.constant('horizon.dashboard.project.search.basePath', path);
+    $provide.constant('searchlight-ui.dashboard.search.search.basePath', path);
 
     $routeProvider
       .when('/search/', {
@@ -60,7 +61,7 @@
 
   run.$inject = [
     'horizon.framework.conf.resource-type-registry.service',
-    'horizon.dashboard.project.search.basePath'
+    'searchlight-ui.dashboard.search.search.basePath'
   ];
 
   function run(registry, basePath) {

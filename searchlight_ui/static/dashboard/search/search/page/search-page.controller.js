@@ -25,8 +25,8 @@
    * Controller for search page
    */
   angular
-    .module('horizon.dashboard.project.search')
-    .controller('horizon.dashboard.project.search.SearchPageController', SearchPageController);
+    .module('searchlight-ui.dashboard.search.search')
+    .controller('searchlight-ui.dashboard.search.search.SearchPageController', SearchPageController);
 
   SearchPageController.$inject = [
     '$scope'

@@ -17,7 +17,7 @@
   'use strict';
 
   angular
-    .module('horizon.dashboard.project.search')
+    .module('searchlight-ui.dashboard.search.search')
     .filter('queryStatus', queryStatusFilter);
 
   queryStatusFilter.$inject = [

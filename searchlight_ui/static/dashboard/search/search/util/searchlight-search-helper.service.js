@@ -18,21 +18,21 @@
   'use strict';
 
   angular
-    .module('horizon.dashboard.project.search')
-    .factory('horizon.dashboard.project.search.searchlightSearchHelper', SearchlightSearchHelper);
+    .module('searchlight-ui.dashboard.search.search')
+    .factory('searchlight-ui.dashboard.search.search.searchlightSearchHelper', SearchlightSearchHelper);
 
   SearchlightSearchHelper.$inject = [
     '$interval',
     '$timeout',
-    'horizon.dashboard.project.search.searchlightFacetUtils',
-    'horizon.dashboard.project.search.searchlightQueryGenerator',
+    'searchlight-ui.dashboard.search.search.searchlightFacetUtils',
+    'searchlight-ui.dashboard.search.search.searchlightQueryGenerator',
     'horizon.app.core.openstack-service-api.searchlight',
-    'horizon.dashboard.project.search.settingsService'
+    'searchlight-ui.dashboard.search.search.settingsService'
   ];
 
   /**
    * @ngdoc service
-   * @name horizon.dashboard.project.search.searchlightSearchHelper
+   * @name searchlight-ui.dashboard.search.search.searchlightSearchHelper
    * @description Search helper - one layer above the search API for no apparent reason.
    *
    * @param {function} $interval $interval

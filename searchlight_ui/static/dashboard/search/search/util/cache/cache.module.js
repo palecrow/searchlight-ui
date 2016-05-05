@@ -18,7 +18,7 @@
 
   /**
    * @ngdoc overview
-   * @name horizon.dashboard.search.search.util.cache
+   * @name searchlight-ui.dashboard.search.search.util.cache
    * @description
    *
    *
@@ -31,5 +31,5 @@
    * in the cache are too old to be maintained anymore.
    */
   angular
-    .module('horizon.dashboard.search.search.util.cache', []);
+    .module('searchlight-ui.dashboard.search.search.util.cache', []);
 })();

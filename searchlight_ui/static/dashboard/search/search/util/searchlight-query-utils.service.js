@@ -18,16 +18,16 @@
   'use strict';
 
   angular
-    .module('horizon.dashboard.project.search')
-    .factory('horizon.dashboard.project.search.searchlightQueryUtils', SearchlightQueryUtils);
+    .module('searchlight-ui.dashboard.search.search')
+    .factory('searchlight-ui.dashboard.search.search.searchlightQueryUtils', SearchlightQueryUtils);
 
   SearchlightQueryUtils.$inject = [
-    'horizon.dashboard.project.search.settingsService'
+    'searchlight-ui.dashboard.search.search.settingsService'
   ];
 
   /**
    * @ngdoc service
-   * @name horizon.dashboard.project.search.searchlightQueryUtils
+   * @name searchlight-ui.dashboard.search.search.searchlightQueryUtils
    * @description Locates resources in openstack dashboard.
    *
    * @param {function} settingsService settingsService

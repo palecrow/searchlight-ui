@@ -18,19 +18,19 @@
   'use strict';
 
   angular
-    .module('horizon.dashboard.project.search')
-    .factory('horizon.dashboard.project.search.searchlightFacetUtils', FacetUtils);
+    .module('searchlight-ui.dashboard.search.search')
+    .factory('searchlight-ui.dashboard.search.search.searchlightFacetUtils', FacetUtils);
 
   FacetUtils.$inject = [
     'commonStatusFilter',
     'resourceLabelerFilter',
-    'horizon.dashboard.project.search.searchlightQueryUtils',
+    'searchlight-ui.dashboard.search.search.searchlightQueryUtils',
     'horizon.app.core.openstack-service-api.searchlight'
   ];
 
   /**
    * @ngdoc service
-   * @name horizon.dashboard.project.search.searchlightFacetUtils
+   * @name searchlight-ui.dashboard.search.search.searchlightFacetUtils
    * @description Maps to / from Searchlight / Magic Search facets
    *
    * @param {function} commonStatusFilter commonStatusFilter filter

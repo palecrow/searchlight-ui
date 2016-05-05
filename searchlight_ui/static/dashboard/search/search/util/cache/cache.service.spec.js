@@ -1,19 +1,19 @@
 (function () {
   'use strict';
 
-  describe('horizon.dashboard.search.search.util.cache module', function () {
+  describe('searchlight-ui.dashboard.search.search.util.cache module', function () {
     it('should have been defined', function () {
-      expect(angular.module('horizon.dashboard.search.search.util.cache')).toBeDefined();
+      expect(angular.module('searchlight-ui.dashboard.search.search.util.cache')).toBeDefined();
     });
   });
 
   describe('cache service add', function () {
     var cacheService, items, oldItem, newItem, returnedItem, cachedItem;
 
-    beforeEach(module('horizon.dashboard.search.search.util.cache'));
+    beforeEach(module('searchlight-ui.dashboard.search.search.util.cache'));
 
     beforeEach(inject(function ($injector) {
-      cacheService = $injector.get('horizon.dashboard.search.search.util.cache.service');
+      cacheService = $injector.get('searchlight-ui.dashboard.search.search.util.cache.service');
     }));
 
     it('added item in cache', function () {
@@ -30,10 +30,10 @@
   describe('cache service sync', function () {
     var cacheService, items, oldItem, newItem, returnedItem, cachedItem;
 
-    beforeEach(module('horizon.dashboard.search.search.util.cache'));
+    beforeEach(module('searchlight-ui.dashboard.search.search.util.cache'));
 
     beforeEach(inject(function ($injector) {
-      cacheService = $injector.get('horizon.dashboard.search.search.util.cache.service');
+      cacheService = $injector.get('searchlight-ui.dashboard.search.search.util.cache.service');
       oldItem = {id:'1', name:'old item'};
       newItem = {id:'1', name:'new item'};
       returnedItem = undefined;
@@ -61,10 +61,10 @@
   describe('cache service clean', function () {
     var cacheService, items, oldItem, newItem, returnedItem, cachedItem;
 
-    beforeEach(module('horizon.dashboard.search.search.util.cache'));
+    beforeEach(module('searchlight-ui.dashboard.search.search.util.cache'));
 
     beforeEach(inject(function ($injector) {
-      cacheService = $injector.get('horizon.dashboard.search.search.util.cache.service');
+      cacheService = $injector.get('searchlight-ui.dashboard.search.search.util.cache.service');
       spyOn(cacheService, "clean").and.callThrough();
     }));
 

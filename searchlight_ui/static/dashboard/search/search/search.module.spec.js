@@ -16,18 +16,18 @@
 (function() {
   'use strict';
 
-  describe('horizon.dashboard.project.search', function() {
+  describe('searchlight-ui.dashboard.search.search', function() {
     it('should exist', function() {
-      expect(angular.module('horizon.dashboard.project.search')).toBeDefined();
+      expect(angular.module('searchlight-ui.dashboard.search.search')).toBeDefined();
     });
   });
 
-  describe('horizon.dashboard.project.search.basePath constant', function () {
+  describe('searchlight-ui.dashboard.search.search.basePath constant', function () {
     var searchBasePath, staticUrl;
 
-    beforeEach(module('horizon.dashboard.project.search'));
+    beforeEach(module('searchlight-ui.dashboard.search.search'));
     beforeEach(inject(function ($injector) {
-      searchBasePath = $injector.get('horizon.dashboard.project.search.basePath');
+      searchBasePath = $injector.get('searchlight-ui.dashboard.search.search.basePath');
       staticUrl = $injector.get('$window').STATIC_URL;
     }));
 
