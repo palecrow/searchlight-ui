@@ -4,6 +4,11 @@ table[ng-controller="searchTableController as table"] {
     background: none;
     padding-left: 2em;
   }
+
+  // work around bootstrap bug https://github.com/twbs/bootstrap/issues/11728
+  tbody tr.warning td {
+    background-color: gold !important;
+  }
 }
 
 tr.incache {
