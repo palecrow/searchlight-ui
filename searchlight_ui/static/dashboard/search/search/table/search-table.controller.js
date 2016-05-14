@@ -74,6 +74,36 @@
     var adHocPollInterval = 500;
     var adHocPollDuration = 5000;
 
+    ctrl.currentSearch = undefined;
+    ctrl.currentSearchName = '';
+    ctrl.savedSearches = [
+    ];
+    ctrl.saveCurrentSearch = function saveCurrentSearch() {
+      var savedSearch = {
+        name: ctrl.currentSearchName,
+        query: angular.copy(ctrl.currentSearch),
+      }
+      ctrl.savedSearches.push(savedSearch);
+    }
+    ctrl.runSavedSearch = function runSavedSearch(savedSearch) {
+      ctrl.searchFacets = savedSearch.searchFacets;
+      if (true || savedSearch.queryString) {
+        $timeout(setInput(savedSearch.queryString));
+        function setInput(text) {
+          return function() {
+            angular.element('.search-input').val(text);
+          };
+        }
+      }
+      savedSearch.onSearchSuccess = onSearchResult;
+      savedSearch.onSearchError = onSearchResult;
+
+      ctrl.currentSearch = savedSearch;
+
+      searchlightSearchHelper.search(savedSearch);
+      searchlightFacetUtils.broadcastFacetsChanged(savedSearch);
+    }
+
     //ctrl.isNested;
 
     init();
@@ -204,6 +234,8 @@
       queryOptions.defaultResourceTypes = ctrl.defaultResourceTypes;
       queryOptions.onSearchSuccess = onSearchResult;
       queryOptions.onSearchError = onSearchResult;
+
+      ctrl.currentSearch = queryOptions;
 
       return searchlightSearchHelper.search(queryOptions);
     }
